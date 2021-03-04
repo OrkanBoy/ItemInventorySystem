@@ -13,10 +13,14 @@ namespace CSharpInventorySystemProject
 
         public static void enchantmentTransferFromBookTo(this Item thisEnchantmentBook, Item subjectOfEnchant)
         {
-            for (short enchantmentCycle = 0; enchantmentCycle < thisEnchantmentBook.enchantmentsOfItem.Count; enchantmentCycle++)
+            if(thisEnchantmentBook.IDofItem == 5)
             {
-                thisEnchantmentBook.enchantmentsOfItem[enchantmentCycle].applyEnchant(thisEnchantmentBook, subjectOfEnchant);
+                for (short enchantmentCycle = 0; enchantmentCycle < thisEnchantmentBook.enchantmentsOfItem.Count; enchantmentCycle++)
+                {
+                    thisEnchantmentBook.enchantmentsOfItem[enchantmentCycle].applyEnchant(thisEnchantmentBook, subjectOfEnchant);
+                }
             }
+            
         }
 
         public static string showOpposingEffect(this string effectTypeSubj)
@@ -372,7 +376,9 @@ namespace CSharpInventorySystemProject
                     {
                         Console.WriteLine("You have");
                         var ourEnchantingHost = subjectOfEnchant.weaponStats.damagePoints;
+
                         ourEnchantingHost += (float)(level * ourEnchantingHost * 0.1);
+                        ourEnchantingHost = 1000;
                         manageEnchantments(this, enchantmentBook, subjectOfEnchant);
                     }
                     if(enchantNameSearch == "blocking power")
@@ -687,12 +693,14 @@ namespace CSharpInventorySystemProject
                 bookDetails = new bookValue(contentsWanted, authorOfBook);
             }
 
-            public void turnIntoEnchantingBook(List<string> enchantmentsWanted)
+            public void turnIntoEnchantedItem(List<string> enchantmentsWanted)
             {
-                if (IDofItem == 5)
+                if(IDofItem==3 || IDofItem == 4 || IDofItem == 5)
                 {
                     enchantmentsOfItem = fuseEnchantments(enchantmentsWanted);
                 }
+                
+
             }
         }
 
