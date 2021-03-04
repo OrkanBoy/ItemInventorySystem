@@ -23,16 +23,14 @@ namespace CSharpInventorySystemProject
 
             List<string> enchantmentList = new List<string>();
 
-            enchantmentList.Add("sharpness"); enchantmentList.Add("sharpness"); enchantmentList.Add("sharpness"); enchantmentList.Add("sharpness"); enchantmentList.Add("sharpness"); enchantmentList.Add("sharpness"); enchantmentList.Add("sharpness"); enchantmentList.Add("sharpness"); enchantmentList.Add("sharpness");
-
-
+            
 
             myBook.turnIntoBook("\nBob: Hello!", "Bob the Builder");
-            myBook.turnIntoEnchantingBook(enchantmentList);
+            myBook.turnIntoEnchantedItem(enchantmentList);
 
             usefulTools.enchantmentTransferFromBookTo(myBook, myTool);
 
-
+            
 
             myTool.displayEnchs();
 
@@ -46,6 +44,7 @@ namespace CSharpInventorySystemProject
         
 
     }
+
     
     
 }
