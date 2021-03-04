@@ -10,6 +10,7 @@ namespace CSharpInventorySystemProject
 
     public static class usefulTools
     {
+
         public static void enchantmentTransferFromBookTo(this Item thisEnchantmentBook, Item subjectOfEnchant)
         {
             for (short enchantmentCycle = 0; enchantmentCycle < thisEnchantmentBook.enchantmentsOfItem.Count; enchantmentCycle++)
@@ -185,12 +186,12 @@ namespace CSharpInventorySystemProject
         }
         public static void manageEnchantments(this Enchantments enchantmentWeWantToTransfer,Item enchantmentGiver, Item subjectItem)
         {
-            var ourEnchantingHost = subjectItem.specificDetailsOfItem;
+            var ourEnchantingHost = subjectItem.enchantmentsOfItem;
             var ourEnchantingDonator = enchantmentGiver.enchantmentsOfItem;
             if ((subjectItem.IDofItem == 3 || subjectItem.IDofItem == 4) && enchantmentGiver.IDofItem==5)
             {
                 
-                ourEnchantingHost.appliedEnchants.Add(enchantmentWeWantToTransfer);
+                ourEnchantingHost.Add(enchantmentWeWantToTransfer);
                 ourEnchantingDonator.RemoveAt(ourEnchantingDonator.IndexOf(enchantmentWeWantToTransfer));
                 
             }
@@ -242,10 +243,7 @@ namespace CSharpInventorySystemProject
         public static void displayEnchs(this Item ourSubject, string spacing = "   ")
         {
             var enchantmentsOfSubject = ourSubject.enchantmentsOfItem;
-            if(ourSubject.IDofItem != 5 )
-            {
-                enchantmentsOfSubject = ourSubject.specificDetailsOfItem.appliedEnchants;
-            }
+
             string accumulatedInfo = "";
             try
             {
@@ -279,7 +277,7 @@ namespace CSharpInventorySystemProject
             public short durabilityLimit;
             public short currentDurability;
             //temporary storage for enchantments, they are not yet applied
-            public List<Enchantments> appliedEnchants;
+
             public toolDetails(short durabilityLimAssigned, short naturalDurability = 0)
             {
                 currentDurability = naturalDurability;
@@ -288,7 +286,7 @@ namespace CSharpInventorySystemProject
                 {
                     currentDurability = durabilityLimAssigned;
                 }
-                appliedEnchants = new List<Enchantments>();
+
             }
 
         }
@@ -330,6 +328,7 @@ namespace CSharpInventorySystemProject
 
             public void applyEnchant(Item enchantmentBook,Item subjectOfEnchant)
             {
+
                 //ID 4 for cllothes, ID 3 for utensils
                 if (subjectOfEnchant.IDofItem == 3 || subjectOfEnchant.IDofItem == 4)
                 {
@@ -660,6 +659,7 @@ namespace CSharpInventorySystemProject
             {
                 IDofItem = 3;
                 specificDetailsOfItem = new toolDetails(durabilityGiven);
+                enchantmentsOfItem = new List<Enchantments>();
                 weaponStats = new weaponSpecialization(DfsOrDmgValue, weaponRange);
             }
             public void assignFoodUse(byte hungerVal, byte timeRequiredToConsume)
@@ -671,6 +671,7 @@ namespace CSharpInventorySystemProject
             {
                 IDofItem = 4;
                 specificDetailsOfItem = new toolDetails(durabilityGiven);
+                enchantmentsOfItem = new List<Enchantments>();
                 clothingInfo = new clothingValue(armorValue, weightAssigned, clothingType);
                 clothingInfo.setTypeofClothing = clothingType;
             }
