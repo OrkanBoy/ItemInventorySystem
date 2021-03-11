@@ -1,26 +1,33 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Collections;
-using System.Threading.Tasks;
 
-
-namespace CSharpInventorySystemProject
+namespace Inventory_System
 {
-
     public static class usefulTools
     {
+        
 
+        public static List<string> arrToList(this string[] ourArrSubj)
+        {
+            List<string> ourListRes = new List<string>();
+            foreach (string CYC in ourArrSubj)
+            {
+                ourListRes.Add(CYC);
+            }
+            return ourListRes;
+        }
         public static void enchantmentTransferFromBookTo(this Item thisEnchantmentBook, Item subjectOfEnchant)
         {
-            if(thisEnchantmentBook.IDofItem == 5)
+            if (thisEnchantmentBook.IDofItem == 5)
             {
-                for (short enchantmentCycle = 0; enchantmentCycle < thisEnchantmentBook.enchantmentsOfItem.Count; enchantmentCycle++)
+                while (thisEnchantmentBook.enchantmentsOfItem.Count > 0)
                 {
-                    thisEnchantmentBook.enchantmentsOfItem[enchantmentCycle].applyEnchant(thisEnchantmentBook, subjectOfEnchant);
+
+                    thisEnchantmentBook.enchantmentsOfItem[0].applyEnchant(thisEnchantmentBook, subjectOfEnchant);
                 }
             }
-            
+
         }
 
         public static string showOpposingEffect(this string effectTypeSubj)
@@ -38,62 +45,59 @@ namespace CSharpInventorySystemProject
             }
             return "empty";
         }
-        
-
-        public static List<Enchantments> fuseEnchantments(this List<string> enchantmentsGiven)
+        public static void individualSearchToAddEnch(short valueWeWantToIns)
         {
-            List<Enchantments> ourEnchantedResult = new List<Enchantments>();
-            short[] multiplierList = new short[enchantmentsGiven.Count];
 
-            for (byte quickCyc = 0; quickCyc < multiplierList.Length; quickCyc++)
+        }
+
+        public static List<Enchantments> updateEnchants(this List<string> enchantmentsGiven, Item ourSubjectOfEnchnatUpdate)
+        {
+            var ourEnchantedResult = ourSubjectOfEnchnatUpdate.enchantmentsOfItem;
+
+            for (byte cycle = 0; cycle < enchantmentsGiven.Count; cycle++)
             {
-                multiplierList[quickCyc] = 1;
+
+                ourEnchantedResult.Add(new Enchantments(enchantmentsGiven[cycle]));
+
             }
-            for (short mainCycle = 0; mainCycle < enchantmentsGiven.Count; mainCycle++)
+
+
+            for (short mainCycle = 0; mainCycle < ourEnchantedResult.Count; mainCycle++)
             {
 
-                for (short cycle = (byte)(mainCycle + 1); cycle < enchantmentsGiven.Count; cycle++)
+                for (short cycle = (byte)(mainCycle + 1); cycle < ourEnchantedResult.Count; cycle++)
                 {
-                    short valueStore = multiplierList[mainCycle];
-                    
-                    if (enchantmentsGiven[mainCycle] == enchantmentsGiven[cycle])
+                    short valueStore = ourEnchantedResult[cycle].magicalPower;
+
+                    if (ourEnchantedResult[mainCycle].enchantNameSearch == ourEnchantedResult[cycle].enchantNameSearch && valueStore > 0)
                     {
-                        multiplierList[mainCycle] += valueStore;
-                        multiplierList[cycle] -= valueStore;
+                        ourEnchantedResult[mainCycle].magicalPower += valueStore;
+                        ourEnchantedResult[cycle].magicalPower -= valueStore;
+                        Console.WriteLine("hi " + ourEnchantedResult[mainCycle].magicalPower + "    " + ourEnchantedResult[cycle].magicalPower);
                     }
                 }
             }
-            for(short currentMultiplierCyc = 0; currentMultiplierCyc < multiplierList.Length; currentMultiplierCyc++)
-            {
-                
-                short stableMultiplier = 0;
-                while(Math.Pow(2, stableMultiplier) <= multiplierList[currentMultiplierCyc])
-                {
-                    stableMultiplier++;
-                }
-                multiplierList[currentMultiplierCyc] = stableMultiplier;
-            }
-            for(short currentStableMultiplierCyc = 0; currentStableMultiplierCyc<multiplierList.Length; currentStableMultiplierCyc++)
-            {
-                multiplierList[currentStableMultiplierCyc] = (short)(Math.Log2(multiplierList[currentStableMultiplierCyc])+1);
-            }
-            for(byte cycle = 0; cycle<multiplierList.Length; cycle++)
-            {
-                
-                ourEnchantedResult.Add(new Enchantments(enchantmentsGiven[cycle], multiplierList[cycle]));
-                
-            }
+
+            byte orginalLength = (byte)(ourEnchantedResult.Count);
+
+
+
+
+
+
             byte foundVoid = 0;
             do
             {
                 foundVoid = 0;
                 for (byte Cycle = 0; Cycle < ourEnchantedResult.Count; Cycle++)
                 {
-                    if (ourEnchantedResult[Cycle].level <= 0)
+                    ourEnchantedResult[Cycle].updateEnchStats();
+                    if (ourEnchantedResult[Cycle].magicalPower <= 0)
                     {
                         ourEnchantedResult.RemoveAt(Cycle);
                         foundVoid++;
                     }
+
                 }
             } while (foundVoid > 0);
 
@@ -188,32 +192,36 @@ namespace CSharpInventorySystemProject
             return effectSolution;
 
         }
-        public static void manageEnchantments(this Enchantments enchantmentWeWantToTransfer,Item enchantmentGiver, Item subjectItem)
+        public static void manageEnchantments(this Enchantments enchantmentWeWantToTransfer, Item enchantmentGiver, Item subjectItem)
         {
             var ourEnchantingHost = subjectItem.enchantmentsOfItem;
             var ourEnchantingDonator = enchantmentGiver.enchantmentsOfItem;
-            if ((subjectItem.IDofItem == 3 || subjectItem.IDofItem == 4) && enchantmentGiver.IDofItem==5)
+            if ((subjectItem.IDofItem == 3 || subjectItem.IDofItem == 4) && enchantmentGiver.IDofItem == 5)
             {
-                
+
                 ourEnchantingHost.Add(enchantmentWeWantToTransfer);
                 ourEnchantingDonator.RemoveAt(ourEnchantingDonator.IndexOf(enchantmentWeWantToTransfer));
-                
+
             }
 
         }
-        public static short closestBase10(short ourValue)
+        public static short closestBase(short ourValue, short baseVal, bool doesReturnValQ = true)
         {
             if (ourValue < 0)
             {
                 ourValue = (short)Math.Pow(Math.Pow(ourValue, 2), 0.5);
             }
             byte startingPower = 0;
-            while (ourValue > Math.Pow(10, startingPower))
+            while (ourValue > Math.Pow(baseVal, startingPower))
             {
                 startingPower++;
 
             }
-            return (short)Math.Pow(10, startingPower);
+            if (doesReturnValQ == false)
+            {
+                return (short)Math.Pow(baseVal, startingPower - 1);
+            }
+            return (short)Math.Pow(baseVal, startingPower);
         }
         public static void displayEfcs(this Item ourSubject, string spacing = "   ")
         {
@@ -249,23 +257,23 @@ namespace CSharpInventorySystemProject
             var enchantmentsOfSubject = ourSubject.enchantmentsOfItem;
 
             string accumulatedInfo = "";
-            try
+            if (enchantmentsOfSubject.Count > 0)
             {
                 foreach (Enchantments currentCyc in enchantmentsOfSubject)
                 {
-                    accumulatedInfo += currentCyc.enchantNameSearch + spacing + currentCyc.level+ "\n";
+                    accumulatedInfo += currentCyc.enchantNameSearch + spacing + currentCyc.level + "\n";
                 }
             }
-            catch(Exception)
+            else
             {
                 accumulatedInfo = "No enchantments";
             }
-            if(ourSubject.IDofItem == 3)
+            if (ourSubject.IDofItem == 3)
             {
                 var quickPointer = ourSubject.weaponStats;
-                Console.WriteLine("Attack Value: "+quickPointer.damagePoints+spacing+"Blocking ability: "+quickPointer.blockChance+spacing+"Reach of weapon: "+quickPointer.reachOfWeapon+"\n"+accumulatedInfo);
+                Console.WriteLine("Attack Value: " + quickPointer.damagePoints + spacing + "Blocking ability: " + quickPointer.blockChance + spacing + "Reach of weapon: " + quickPointer.reachOfWeapon + "\n" + accumulatedInfo);
             }
-            if(ourSubject.IDofItem == 4)
+            if (ourSubject.IDofItem == 4)
             {
                 var quickPointer = ourSubject.clothingInfo;
                 Console.WriteLine("Type of clothing/armor/dress: " + quickPointer.setTypeofClothing + spacing + "Armor points: " + quickPointer.armorPoints + spacing + "Weight of armor(unknown units): " + spacing + quickPointer.weightOfCloth + "\n" + accumulatedInfo);
@@ -276,13 +284,13 @@ namespace CSharpInventorySystemProject
             }
         }
 
-        public struct toolDetails
+        public class toolDetails
         {
             public short durabilityLimit;
             public short currentDurability;
             //temporary storage for enchantments, they are not yet applied
 
-            public toolDetails(short durabilityLimAssigned, short naturalDurability = 0)
+            public toolDetails(short durabilityLimAssigned = 0, short naturalDurability = 0)
             {
                 currentDurability = naturalDurability;
                 durabilityLimit = durabilityLimAssigned;
@@ -296,23 +304,38 @@ namespace CSharpInventorySystemProject
         }
         public class Enchantments
         {
+            public short magicalPower;
+            public short copiesReqToLvlUp;
             private string enchantType;
             public short level;
 
 
-            public Enchantments(string nameOfEnchant = "Unbreaking", short levelOfEnchant = 1)
+            public Enchantments(string nameOfEnchant = "Unbreaking", short magicGiven = 0)
             {
-                level = levelOfEnchant;
-                //default enchantmnet name is Unbreaking
-                enchantType = "unbreaking";
                 enchantNameSearch = nameOfEnchant;
+                
+                enchantFuseReqSearch = 0;
+                if (magicGiven == 0)
+                {
+                    magicalPower = enchantFuseReqSearch;
+                }
+                updateEnchStats();
+                //default enchantmnet name is Unbreaking
+
+
+            }
+            public void updateEnchStats()
+            {
+                level = (short)(Math.Log(magicalPower, copiesReqToLvlUp));
+
+
             }
             public string enchantNameSearch
             {
                 get { return enchantType; }
                 set
                 {
-                    string[] legalEnchantments = { "unbreaking", "light weight", "protection", "sharpness", "mending", "sweeping edge","blocking power", "fire aspect"};
+                    string[] legalEnchantments = { "unbreaking", "light weight", "protection", "sharpness", "mending", "sweeping edge", "blocking power", "fire aspect" };
                     foreach (string cycleCheck in legalEnchantments)
                     {
                         if (cycleCheck == value.ToLower())
@@ -329,8 +352,26 @@ namespace CSharpInventorySystemProject
                     }
                 }
             }
+            public short enchantFuseReqSearch
+            {
+                get { return copiesReqToLvlUp; }
+                set
+                {
+                    string[] enchesReq3 = { "mending", "fire aspect", "light weight" };
+                    if (arrToList(enchesReq3).Contains(enchantType))
+                    {
+                        copiesReqToLvlUp = 3;
+                    }
+                    else
+                    {
+                        copiesReqToLvlUp = 2;
+                    }
 
-            public void applyEnchant(Item enchantmentBook,Item subjectOfEnchant)
+                }
+            }
+
+
+            public void applyEnchant(Item enchantmentBook, Item subjectOfEnchant)
             {
 
                 //ID 4 for cllothes, ID 3 for utensils
@@ -341,9 +382,9 @@ namespace CSharpInventorySystemProject
                         var ourEnchantingHost = subjectOfEnchant.specificDetailsOfItem;
                         ourEnchantingHost.durabilityLimit *= (short)(level + 1);
                         ourEnchantingHost.currentDurability *= (short)(level + 1);
-                        manageEnchantments(this,enchantmentBook, subjectOfEnchant);
+                        manageEnchantments(this, enchantmentBook, subjectOfEnchant);
                     }
-                    if(enchantNameSearch == "mending")
+                    if (enchantNameSearch == "mending")
                     {
                         manageEnchantments(this, enchantmentBook, subjectOfEnchant);
                     }
@@ -353,44 +394,36 @@ namespace CSharpInventorySystemProject
                 {
                     if (enchantNameSearch == "protection")
                     {
-                        var ourEnchantingHost = subjectOfEnchant.clothingInfo.armorPoints;
-                        ourEnchantingHost += (float)(level * ourEnchantingHost * 0.2);
-                        manageEnchantments(this,enchantmentBook, subjectOfEnchant);
+                        subjectOfEnchant.clothingInfo.armorPoints += (short)(level * subjectOfEnchant.clothingInfo.armorPoints * 0.2);
+                        manageEnchantments(this, enchantmentBook, subjectOfEnchant);
                     }
                     if (enchantNameSearch == "light weight")
                     {
-                        var ourEnchantingHost = subjectOfEnchant.clothingInfo.weightOfCloth;
-                        ourEnchantingHost += (float)(level * ourEnchantingHost * 0.2);
-                        manageEnchantments(this,enchantmentBook, subjectOfEnchant);
+                        subjectOfEnchant.clothingInfo.weightOfCloth += (short)(level * subjectOfEnchant.clothingInfo.weightOfCloth * 0.2);
+                        manageEnchantments(this, enchantmentBook, subjectOfEnchant);
                     }
                 }
                 if (subjectOfEnchant.IDofItem == 3)
                 {
                     if (enchantNameSearch == "sweeping edge")
                     {
-                        var ourEnchantingHost = subjectOfEnchant.weaponStats.reachOfWeapon;
-                        ourEnchantingHost += (float)(level * ourEnchantingHost * 0.1);
-                        manageEnchantments(this,enchantmentBook, subjectOfEnchant);
-                    }
-                    if(enchantNameSearch == "sharpness")
-                    {
-                        Console.WriteLine("You have");
-                        var ourEnchantingHost = subjectOfEnchant.weaponStats.damagePoints;
-
-                        ourEnchantingHost += (float)(level * ourEnchantingHost * 0.1);
-                        ourEnchantingHost = 1000;
+                        subjectOfEnchant.weaponStats.reachOfWeapon += (short)(level * subjectOfEnchant.weaponStats.reachOfWeapon * 0.2);
                         manageEnchantments(this, enchantmentBook, subjectOfEnchant);
                     }
-                    if(enchantNameSearch == "blocking power")
+                    if (enchantNameSearch == "sharpness")
                     {
-                        var ourEnchantingHost = subjectOfEnchant.weaponStats.blockChance;
-                        ourEnchantingHost += (float)(level * ourEnchantingHost * 0.1);
+                        subjectOfEnchant.weaponStats.damagePoints += (short)(level * subjectOfEnchant.weaponStats.damagePoints * 0.1);
                         manageEnchantments(this, enchantmentBook, subjectOfEnchant);
                     }
-                    if(enchantNameSearch == "fire aspect")
+                    if (enchantNameSearch == "blocking power")
+                    {
+                        subjectOfEnchant.weaponStats.blockChance += (short)(level * subjectOfEnchant.weaponStats.blockChance * 0.1);
+                        manageEnchantments(this, enchantmentBook, subjectOfEnchant);
+                    }
+                    if (enchantNameSearch == "fire aspect")
                     {
                         List<string> fireEffectAccumulator = new List<string>();
-                        for(short cycle = 0; cycle < level; cycle++)
+                        for (short cycle = 0; cycle < level; cycle++)
                         {
                             fireEffectAccumulator.Add("fragility");
                         }
@@ -399,19 +432,19 @@ namespace CSharpInventorySystemProject
                     }
                 }
             }
-            
+
 
         }
 
 
-        public struct weaponSpecialization
+        public class weaponSpecialization
         {
 
-            public float damagePoints;
-            public float reachOfWeapon;
-            public float blockChance;
+            public short damagePoints;
+            public short reachOfWeapon;
+            public short blockChance;
 
-            public weaponSpecialization(short valueOfWeapon, short weaponRange = 1)
+            public weaponSpecialization(short valueOfWeapon = 0, short weaponRange = 0)
             {
                 byte absoluteValue = (byte)Math.Pow(Math.Pow(valueOfWeapon, 2), 0.5);
                 damagePoints = 0;
@@ -440,9 +473,9 @@ namespace CSharpInventorySystemProject
             }
 
         }
-        public struct clothingValue
+        public class clothingValue
         {
-            public float armorPoints;
+            public short armorPoints;
             /*hat, helmet by default have coveredArea value of 5
              pants, trousres have default coveredArea value of 8
             socks and shoes have default coveredArea value of 4
@@ -453,10 +486,10 @@ namespace CSharpInventorySystemProject
              */
 
 
-            public float weightOfCloth;
+            public short weightOfCloth;
             private string typeOfClothing;
 
-            public clothingValue(short armorValueGiven, short weightAssigned = 0, string desiredClothType = "cloth")
+            public clothingValue(short armorValueGiven = 0, short weightAssigned = 0, string desiredClothType = null)
             {
 
                 armorPoints = armorValueGiven;
@@ -464,7 +497,7 @@ namespace CSharpInventorySystemProject
                 if (weightAssigned == 0)
                 {
                     //default way of balancing armor/clothing, more armorPoints, more WieighTvalue
-                    weightAssigned = (short)((float)armorValueGiven / (float)closestBase10(armorValueGiven));
+                    weightAssigned = (short)((float)armorValueGiven / (float)closestBase(armorValueGiven, 10));
                 }
                 weightOfCloth = weightAssigned;
 
@@ -477,7 +510,7 @@ namespace CSharpInventorySystemProject
                 get { return typeOfClothing; }
                 set
                 {
-                    List<string> allowedTypesOfClothing = new List<string>() { "hat", "helmet", "pants", "trousers", "shoes", "socks", "chestplate" };
+                    List<string> allowedTypesOfClothing = new List<string>() { "hat", "helmet", "pants", "trousers", "shoes", "socks", "chestplate", null };
                     foreach (string cycleOfSelection in allowedTypesOfClothing)
                     {
                         if (value.ToLower() == cycleOfSelection)
@@ -485,7 +518,7 @@ namespace CSharpInventorySystemProject
                             typeOfClothing = value;
                             break;
                         }
-                        else { typeOfClothing = "cloth"; }
+                        else { typeOfClothing = null; }
                     }
                 }
             }
@@ -597,11 +630,11 @@ namespace CSharpInventorySystemProject
         }
 
 
-        public struct bookValue
+        public class bookValue
         {
             public string contentsOfBook;
             public string authorOfBook;
-            public bookValue(string deliveredContents = null, string supposedAuthor="unknown")
+            public bookValue(string deliveredContents = null, string supposedAuthor = "unknown")
             {
                 contentsOfBook = deliveredContents;
 
@@ -644,7 +677,7 @@ namespace CSharpInventorySystemProject
 
             //for ID == 5, books
             public bookValue bookDetails;
-            public Item(string nameOfItem, string detailsOfItem, byte stackLim, byte amountLoaded)
+            public Item(string nameOfItem, string detailsOfItem, byte stackLim = 64, byte amountLoaded = 16)
             {
                 itemName = nameOfItem;
                 description = detailsOfItem;
@@ -681,11 +714,11 @@ namespace CSharpInventorySystemProject
                 clothingInfo = new clothingValue(armorValue, weightAssigned, clothingType);
                 clothingInfo.setTypeofClothing = clothingType;
             }
-            public void assignPotionUse(byte intensityInitiation, byte durationInitiation, List<string> effectsAssigned)
+            public void assignPotionUse(byte intensityInitiation, byte durationInitiation)
             {
                 IDofItem = 2;
+                //by default poions are empty
                 potionInfo = new potionValue(intensityInitiation, durationInitiation);
-                lingeringEffects = fuseEffects(effectsAssigned);
             }
             public void turnIntoBook(string contentsWanted, string authorOfBook = "unknown")
             {
@@ -693,13 +726,13 @@ namespace CSharpInventorySystemProject
                 bookDetails = new bookValue(contentsWanted, authorOfBook);
             }
 
-            public void turnIntoEnchantedItem(List<string> enchantmentsWanted)
+            public void updateEnchantmentStatus(List<string> enchantmentsWanted)
             {
-                if(IDofItem==3 || IDofItem == 4 || IDofItem == 5)
+                if (IDofItem == 3 || IDofItem == 4 || IDofItem == 5)
                 {
-                    enchantmentsOfItem = fuseEnchantments(enchantmentsWanted);
+                    updateEnchants(enchantmentsWanted, this);
                 }
-                
+
 
             }
         }
@@ -782,10 +815,8 @@ namespace CSharpInventorySystemProject
 
 
         }
-
-
-
     }
 }
+
 
 
