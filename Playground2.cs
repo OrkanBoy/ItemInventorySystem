@@ -1,50 +1,41 @@
 using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Text;
 
-
-namespace CSharpInventorySystemProject
+namespace Inventory_System
 {
+    
     using static usefulTools;
     class Program
     {
-
         static void Main(string[] args)
         {
-            Console.WriteLine(increase(5, 2));
-
-            Item myTool = new Item();
-            myTool.assignWeaponRole(-10, 4);
-
-
-            Item myBook = new Item();
+            Item myBook = new Item("English Literature Book", "A book for nerds");
 
 
 
             List<string> enchantmentList = new List<string>();
 
-            
+
 
             myBook.turnIntoBook("\nBob: Hello!", "Bob the Builder");
-            myBook.turnIntoEnchantedItem(enchantmentList);
 
-            usefulTools.enchantmentTransferFromBookTo(myBook, myTool);
+            enchantmentList.Add("unbreaking"); enchantmentList.Add("unbreaking");
+            enchantmentList.Add("mending"); enchantmentList.Add("unbreaking"); enchantmentList.Add("mending"); enchantmentList.Add("unbreaking");
+            enchantmentList.Add("mending"); enchantmentList.Add("mending"); enchantmentList.Add("mending"); enchantmentList.Add("mending"); enchantmentList.Add("mending"); enchantmentList.Add("mending"); enchantmentList.Add("mending"); enchantmentList.Add("unbreaking");
+            myBook.updateEnchantmentStatus(enchantmentList);
 
-            
-
-            myTool.displayEnchs();
+            List<string> newListEnchs = new List<string>();
 
 
+
+
+
+
+
+
+
+            myBook.displayEnchs();
         }
-        static byte increase(byte valueX, byte valueY = 1)
-        {
-            return (byte)(valueX + valueY);
-            
-        }
-        
-
     }
-
-    
-    
 }
