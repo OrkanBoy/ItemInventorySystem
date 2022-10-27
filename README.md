@@ -1,7 +1,6 @@
 # ItemInventorySystem
 My goal is to make inventory system similar to minecraft's one with Terminal CUI
-This task was suggested for me by my great freind Shadow Eye, nicest person I ever met online
-Alwyas helps me out a ton whenver i need him!!! 
+This task was suggested for me by a good friend who I look upto.
 
 The Actual task is: 
 
